@@ -8,7 +8,11 @@ namespace UnityStandardAssets.Vehicles.Car
     public class CarUserControl : MonoBehaviour
     {
         private CarController m_Car; // the car controller we want to use
+        public HingeJoint steeringWheel;
+        public float maxTurnAngle = 180;
 
+        public HingeJoint speedLever;
+        public float maxSpeedAngle = 50; 
 
         private void Awake()
         {
@@ -20,8 +24,10 @@ namespace UnityStandardAssets.Vehicles.Car
         private void FixedUpdate()
         {
             // pass the input to the car!
-            float h = CrossPlatformInputManager.GetAxis("Horizontal");
-            float v = CrossPlatformInputManager.GetAxis("Vertical");
+            float h = Mathf.Clamp(steeringWheel.angle/maxTurnAngle,-1,1);
+            float v = Mathf.Clamp(speedLever.angle / maxSpeedAngle, -1, 1);
+
+            if (Mathf.Abs(v) < 0.1f) v = 0;
 #if !MOBILE_INPUT
             float handbrake = CrossPlatformInputManager.GetAxis("Jump");
             m_Car.Move(h, v, v, handbrake);
